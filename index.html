@@ -1,0 +1,470 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Crew Guide">
+<meta name="theme-color" content="#0a0e1a">
+<title>Crew Onboarding Guide</title>
+<link rel="apple-touch-icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 180 180'%3E%3Crect width='180' height='180' fill='%230d1b3e'/%3E%3Ctext x='90' y='115' font-size='90' text-anchor='middle'%3E%E2%9A%93%3C/text%3E%3C/svg%3E">
+
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600&family=DM+Sans:wght@300;400;500;600&display=swap');
+
+:root {
+  --bg: #0a0e1a;
+  --surface: #0f1628;
+  --border: rgba(255,255,255,0.07);
+  --muted: #6a7a94;
+  --faint: #3a4a62;
+  --safe-top: env(safe-area-inset-top, 0px);
+  --safe-bottom: env(safe-area-inset-bottom, 0px);
+}
+* { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+html, body { height: 100%; overflow: hidden; background: var(--bg); color: #ddd6c8; font-family: 'DM Sans', sans-serif; }
+
+/* ── ONBOARDING ── */
+#onboarding {
+  position: fixed; inset: 0; z-index: 200; background: var(--bg);
+  display: flex; flex-direction: column; align-items: center; justify-content: flex-start;
+  padding: calc(var(--safe-top) + 36px) 28px calc(var(--safe-bottom) + 28px);
+  overflow-y: auto; -webkit-overflow-scrolling: touch;
+}
+#onboarding.hidden { display: none; }
+.ob-header { text-align: center; margin-bottom: 32px; }
+.ob-anchor { font-size: 50px; margin-bottom: 12px; display: block; }
+.ob-header h1 { font-family: 'Playfair Display', serif; font-size: 27px; font-weight: 600; color: #f0e8d8; line-height: 1.2; margin-bottom: 8px; }
+.ob-header p { font-size: 14px; color: var(--muted); line-height: 1.6; max-width: 300px; margin: 0 auto; }
+.ob-rainbow { height: 3px; width: 70px; margin: 14px auto 0; background: linear-gradient(90deg,#FF4D4D,#FFB830,#00C896,#4D9FFF,#A259FF); border-radius: 2px; }
+.ob-form { width: 100%; max-width: 380px; }
+.ob-field { margin-bottom: 16px; }
+.ob-field label { display: block; font-size: 11px; font-weight: 500; text-transform: uppercase; letter-spacing: 0.12em; color: var(--muted); margin-bottom: 7px; }
+.ob-field input {
+  width: 100%; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1);
+  border-radius: 10px; padding: 14px 16px; font-size: 16px; font-family: 'DM Sans', sans-serif;
+  color: #f0e8d8; outline: none; transition: border-color 0.2s, background 0.2s; -webkit-appearance: none;
+}
+.ob-field input:focus { border-color: #4D9FFF; background: rgba(77,159,255,0.06); }
+.ob-field input::placeholder { color: var(--faint); }
+.ob-error { font-size: 12px; color: #FF6B6B; margin-top: 6px; display: none; }
+.ob-error.show { display: block; }
+.ob-btn {
+  width: 100%; padding: 16px; background: linear-gradient(135deg, #1a3a6e, #0d2550);
+  border: 1px solid rgba(77,159,255,0.3); border-radius: 12px; color: #c0d8f0;
+  font-family: 'DM Sans', sans-serif; font-size: 16px; font-weight: 600; cursor: pointer;
+  letter-spacing: 0.04em; margin-top: 8px; transition: all 0.2s ease; position: relative; overflow: hidden;
+}
+.ob-btn:active { transform: scale(0.98); }
+.ob-btn::after { content: ''; position: absolute; bottom: 0; left: 0; right: 0; height: 2px; background: linear-gradient(90deg, #4D9FFF, #00C896); }
+
+/* ── MAIN APP ── */
+#app { display: flex; flex-direction: column; height: 100%; padding-top: var(--safe-top); padding-bottom: var(--safe-bottom); }
+
+#header { flex-shrink: 0; background: linear-gradient(160deg, #0d1b3e 0%, #0a1628 100%); border-bottom: 1px solid var(--border); padding: 14px 20px 12px; position: relative; }
+#header::after { content: ''; position: absolute; bottom: 0; left: 0; right: 0; height: 3px; background: linear-gradient(90deg,#FF4D4D,#FFB830,#00C896,#4D9FFF,#A259FF,#FF4D4D); opacity: 0.7; }
+#header-top { display: flex; align-items: center; gap: 10px; margin-bottom: 12px; }
+#header-top .anchor { font-size: 24px; }
+#header-top h1 { font-family: 'Playfair Display', serif; font-size: 18px; font-weight: 600; color: #f0e8d8; line-height: 1.2; }
+#header-top h1 span { display: block; font-family: 'DM Sans', sans-serif; font-size: 10px; font-weight: 400; color: var(--muted); letter-spacing: 0.12em; text-transform: uppercase; margin-top: 1px; }
+#crew-name-badge { margin-left: auto; font-size: 12px; color: #8ab0d8; text-align: right; line-height: 1.4; flex-shrink: 0; max-width: 130px; }
+#crew-name-badge strong { display: block; color: #c0d8f0; font-size: 13px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+#overall-bar-labels { display: flex; justify-content: space-between; font-size: 11px; color: var(--muted); letter-spacing: 0.06em; text-transform: uppercase; margin-bottom: 5px; }
+#overall-bar-track { height: 5px; background: rgba(255,255,255,0.07); border-radius: 3px; overflow: hidden; }
+#overall-bar-fill { height: 100%; background: linear-gradient(90deg, #00C896, #4D9FFF); border-radius: 3px; transition: width 0.4s ease; width: 0%; }
+
+#section-nav { flex-shrink: 0; display: flex; overflow-x: auto; gap: 8px; padding: 10px 14px; background: var(--surface); border-bottom: 1px solid var(--border); scrollbar-width: none; }
+#section-nav::-webkit-scrollbar { display: none; }
+.nav-pill { flex-shrink: 0; display: flex; align-items: center; gap: 6px; padding: 7px 13px; border-radius: 20px; border: 1px solid var(--border); background: transparent; color: var(--muted); font-family: 'DM Sans', sans-serif; font-size: 13px; cursor: pointer; transition: all 0.2s ease; white-space: nowrap; }
+.nav-pill.active { border-color: var(--pill-color); background: color-mix(in srgb, var(--pill-color) 15%, transparent); color: var(--pill-color); font-weight: 500; }
+.nav-pill .pill-badge { font-size: 11px; font-weight: 600; background: rgba(255,255,255,0.08); border-radius: 10px; padding: 1px 6px; }
+.nav-pill.active .pill-badge { background: color-mix(in srgb, var(--pill-color) 25%, transparent); color: var(--pill-color); }
+.nav-pill.done .pill-badge { background: var(--pill-color); color: #000; }
+
+#content { flex: 1; overflow-y: auto; overscroll-behavior: contain; -webkit-overflow-scrolling: touch; }
+.section-panel { display: none; }
+.section-panel.active { display: block; animation: fadeUp 0.25s ease; }
+@keyframes fadeUp { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
+
+.section-hero { padding: 18px 20px 14px; display: flex; align-items: center; gap: 14px; }
+.section-hero .hero-icon { font-size: 34px; }
+.section-hero .hero-info { flex: 1; }
+.section-hero h2 { font-family: 'Playfair Display', serif; font-size: 19px; font-weight: 600; line-height: 1.2; color: #f0e8d8; margin-bottom: 3px; }
+.section-hero .hero-sub { font-size: 11px; color: var(--muted); text-transform: uppercase; letter-spacing: 0.1em; }
+.section-hero .hero-count { font-size: 13px; font-weight: 500; white-space: nowrap; }
+.section-progress-bar { height: 3px; margin: 0 20px 4px; background: rgba(255,255,255,0.06); border-radius: 2px; overflow: hidden; }
+.section-progress-fill { height: 100%; border-radius: 2px; transition: width 0.3s ease; }
+.section-divider { height: 1px; margin: 10px 20px 4px; opacity: 0.15; }
+.checklist { padding: 8px 12px 32px; }
+
+.check-item { display: flex; align-items: flex-start; gap: 12px; padding: 11px 10px; border-radius: 10px; margin-bottom: 2px; cursor: pointer; transition: background 0.15s ease; -webkit-user-select: none; user-select: none; }
+.check-item:active { background: rgba(255,255,255,0.04); }
+.check-item.checked { background: color-mix(in srgb, var(--section-color) 8%, transparent); }
+.check-box { width: 22px; height: 22px; flex-shrink: 0; border-radius: 6px; border: 1.5px solid rgba(255,255,255,0.15); display: flex; align-items: center; justify-content: center; margin-top: 1px; transition: all 0.2s ease; font-size: 13px; font-weight: bold; color: #000; }
+.check-item.checked .check-box { border-color: var(--section-color); background: var(--section-color); }
+.check-label { font-size: 14.5px; line-height: 1.55; color: #c0b8a8; transition: all 0.2s ease; }
+.check-item.checked .check-label { color: var(--muted); text-decoration: line-through; text-decoration-color: var(--faint); }
+.section-complete { text-align: center; padding: 24px 20px; animation: fadeUp 0.3s ease; }
+.section-complete .complete-icon { font-size: 40px; margin-bottom: 8px; }
+.section-complete p { font-family: 'Playfair Display', serif; font-size: 17px; color: #f0e8d8; margin-bottom: 5px; }
+.overscroll-fix { min-height: calc(100% + 1px); }
+
+/* ── COMPLETION MODAL ── */
+#completion-overlay {
+  display: none; position: fixed; inset: 0; z-index: 300;
+  background: rgba(5,8,18,0.92); backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px);
+  align-items: center; justify-content: center; padding: 20px;
+}
+#completion-overlay.show { display: flex; animation: fadeIn 0.3s ease; }
+@keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+#completion-modal {
+  background: linear-gradient(160deg, #0d1b3e 0%, #0a1628 100%);
+  border: 1px solid rgba(0,200,150,0.25); border-radius: 20px;
+  padding: 28px 22px 24px; width: 100%; max-width: 390px;
+  position: relative; overflow: hidden;
+  animation: slideUp 0.35s cubic-bezier(0.34,1.56,0.64,1);
+  max-height: 90vh; overflow-y: auto; -webkit-overflow-scrolling: touch;
+}
+#completion-modal::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 3px; background: linear-gradient(90deg,#00C896,#4D9FFF,#A259FF); }
+@keyframes slideUp { from { opacity: 0; transform: translateY(30px) scale(0.95); } to { opacity: 1; transform: translateY(0) scale(1); } }
+
+.cm-stars { font-size: 32px; text-align: center; margin-bottom: 6px; letter-spacing: 4px; }
+.cm-title { font-family: 'Playfair Display', serif; font-size: 22px; font-weight: 600; color: #f0e8d8; text-align: center; margin-bottom: 5px; }
+.cm-subtitle { font-size: 13px; color: var(--muted); text-align: center; margin-bottom: 20px; line-height: 1.5; }
+.cm-card { background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.07); border-radius: 12px; padding: 14px 16px; margin-bottom: 16px; }
+.cm-card-row { display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 8px; }
+.cm-card-row:last-child { margin-bottom: 0; }
+.cm-card-label { font-size: 11px; text-transform: uppercase; letter-spacing: 0.1em; color: var(--muted); flex-shrink: 0; margin-right: 12px; }
+.cm-card-value { font-size: 14px; font-weight: 500; color: #c0d8f0; text-align: right; word-break: break-word; }
+
+.cm-confirm-row {
+  display: flex; align-items: flex-start; gap: 12px;
+  background: rgba(0,200,150,0.06); border: 1px solid rgba(0,200,150,0.2);
+  border-radius: 10px; padding: 13px; margin-bottom: 16px; cursor: pointer;
+}
+.cm-checkbox { width: 22px; height: 22px; flex-shrink: 0; border-radius: 6px; border: 2px solid rgba(0,200,150,0.4); display: flex; align-items: center; justify-content: center; margin-top: 1px; transition: all 0.2s ease; font-size: 13px; font-weight: bold; color: #000; background: transparent; }
+.cm-confirm-row.ticked .cm-checkbox { background: #00C896; border-color: #00C896; }
+.cm-confirm-text { font-size: 13px; line-height: 1.55; color: #7a9a7a; }
+.cm-confirm-row.ticked .cm-confirm-text { color: #a0c8a0; }
+
+.cm-send-btn {
+  width: 100%; padding: 15px; background: linear-gradient(135deg, #005a40, #004030);
+  border: 1px solid rgba(0,200,150,0.3); border-radius: 12px; color: #80e8c8;
+  font-family: 'DM Sans', sans-serif; font-size: 15px; font-weight: 600; cursor: pointer;
+  transition: all 0.2s ease; opacity: 0.35; pointer-events: none;
+}
+.cm-send-btn.ready { opacity: 1; pointer-events: all; }
+.cm-send-btn.ready:active { transform: scale(0.98); }
+.cm-note { font-size: 11px; color: var(--faint); text-align: center; margin-top: 10px; line-height: 1.5; }
+
+/* ── INSTALL BANNER ── */
+#install-banner { display: none; position: fixed; bottom: calc(var(--safe-bottom) + 12px); left: 16px; right: 16px; background: #112244; border: 1px solid rgba(77,159,255,0.3); border-radius: 14px; padding: 14px 16px; font-size: 13px; color: #8ab0d8; line-height: 1.5; z-index: 100; box-shadow: 0 8px 32px rgba(0,0,0,0.5); }
+#install-banner.show { display: block; }
+#install-banner strong { color: #c0d8f0; display: block; margin-bottom: 3px; }
+#install-banner button { position: absolute; top: 10px; right: 12px; background: none; border: none; color: var(--muted); font-size: 18px; cursor: pointer; }
+</style>
+</head>
+<body>
+
+<!-- ONBOARDING -->
+<div id="onboarding">
+  <div class="ob-header">
+    <span class="ob-anchor">⚓</span>
+    <h1>Welcome Aboard</h1>
+    <p>Before you begin, please enter your crew details. These will be saved to your progress record.</p>
+    <div class="ob-rainbow"></div>
+  </div>
+  <div class="ob-form">
+    <div class="ob-field">
+      <label>Full Name</label>
+      <input type="text" id="ob-name" placeholder="" autocomplete="name">
+    </div>
+    <div class="ob-field">
+      <label>Crew ID Number</label>
+      <input type="text" id="ob-id" placeholder="" autocomplete="off">
+    </div>
+    <div class="ob-field">
+      <label>Vessel Name</label>
+      <input type="text" id="ob-vessel" placeholder="" autocomplete="off">
+    </div>
+    <div class="ob-field">
+      <label>Brand / Company</label>
+      <input type="text" id="ob-brand" placeholder="" autocomplete="organization">
+    </div>
+    <div class="ob-error" id="ob-error">Please fill in all fields before continuing.</div>
+    <button class="ob-btn" onclick="submitOnboarding()">Begin Onboarding ⚓</button>
+  </div>
+</div>
+
+<!-- MAIN APP -->
+<div id="app">
+  <div id="header">
+    <div id="header-top">
+      <div class="anchor">⚓</div>
+      <h1>Crew Onboarding<span>First 14 Days Guide</span></h1>
+      <div id="crew-name-badge"></div>
+    </div>
+    <div id="overall-bar-labels">
+      <span>Overall Progress</span>
+      <span id="overall-count">0 / 80 tasks</span>
+    </div>
+    <div id="overall-bar-track"><div id="overall-bar-fill"></div></div>
+  </div>
+  <div id="section-nav"></div>
+  <div id="content"><div style="min-height:calc(100% + 1px)" id="sections-container"></div></div>
+</div>
+
+<!-- COMPLETION MODAL -->
+<div id="completion-overlay">
+  <div id="completion-modal">
+    <div class="cm-stars">🌟🎖️🌟</div>
+    <div class="cm-title">Onboarding Complete!</div>
+    <div class="cm-subtitle">All 80 tasks finished.<br>Please confirm and submit your record below.</div>
+    <div class="cm-card" id="cm-details-card"></div>
+    <div class="cm-confirm-row" id="cm-confirm-row" onclick="toggleConfirm()">
+      <div class="cm-checkbox" id="cm-checkbox"></div>
+      <div class="cm-confirm-text">I confirm that I have genuinely completed all 80 onboarding tasks and that the information above is correct.</div>
+    </div>
+    <button class="cm-send-btn" id="cm-send-btn" onclick="sendEmail()">✉️ Send Completion Record</button>
+    <div class="cm-note">Opens your Mail app with a pre-filled completion record addressed to your training coordinator.</div>
+  </div>
+</div>
+
+<div id="install-banner">
+  <button onclick="document.getElementById('install-banner').classList.remove('show')">✕</button>
+  <strong>📲 Save to your Home Screen</strong>
+  Tap the <strong>Share</strong> button in Safari, then <strong>"Add to Home Screen"</strong>.
+</div>
+
+<script>
+const SECTIONS = [
+  { id:"safety", emoji:"🚨", color:"#FF4D4D", title:"Safety & Emergency", sub:"Days 1–2 — Mandatory first", items:["Attend mandatory Safety Familiarisation briefing within 24 hours of joining","Locate your Muster Station and memorise the route from your cabin","Collect and try on your lifejacket — confirm correct size and fit","Locate the nearest lifeboat and rescue boat assigned to you","Learn the emergency alarm signals (7 short + 1 long = abandon ship)","Identify fire extinguisher types and nearest fire station on your deck","Complete SOLAS sign-on paperwork","Understand your emergency duty role in the muster list","Locate emergency exits on your accommodation deck and working area","Participate in your first fire and boat drill"] },
+  { id:"admin", emoji:"📋", color:"#4D9FFF", title:"Admin & Documents", sub:"Days 1–3", items:["Report to the Crew Purser / HR office to complete sign-on formalities","Submit original STCW certificates and flag state documents","Obtain your Crew ID card and ship's company pass","Confirm your wage account details and allotment setup","Register with the ship's medical centre and disclose any conditions","Collect your uniform and confirm outstanding items with Crew Services","Review and sign your Seafarer Employment Agreement (SEA)","Confirm your department head and direct supervisor","Access the crew intranet / portal and set up login credentials","Understand port leave procedures and gangway sign-out system"] },
+  { id:"ship", emoji:"🚢", color:"#00C896", title:"Ship Familiarisation", sub:"Days 1–5", items:["Walk every deck from bow to stern at least once","Locate the Bridge, Engine Room entrance, and Crew Mess","Find the Crew Bar, Crew Gym, and crew recreation spaces","Identify the Medical Centre and 24-hour emergency contact","Locate crew laundry facilities and learn operating times","Find the nearest crew internet station or Wi-Fi access point","Learn the ship's internal telephone directory and key departments","Understand the ship's daily schedule and Cruise Director's programme","Identify restricted areas and guest-only zones","Familiarise yourself with the crew corridor route to your work area"] },
+  { id:"dept", emoji:"⚓", color:"#FFB830", title:"Dept & Role", sub:"Days 2–7", items:["Meet all direct colleagues and key cross-department contacts","Receive a full job description and performance expectation briefing","Shadow a senior colleague through at least two full shifts","Understand your roster, rotation schedule, and days off","Learn department-specific SOPs (Standard Operating Procedures)","Complete required onboard training modules for your role","Understand how to log maintenance requests or operational issues","Attend your first departmental meeting or briefing","Learn the communication protocol within your department","Complete your department-specific sign-on checklist if applicable"] },
+  { id:"rules", emoji:"📜", color:"#A259FF", title:"Rules & Policies", sub:"Days 3–7", items:["Read and acknowledge the Ship's Rules and Crew Code of Conduct","Understand the zero-tolerance alcohol and drug policy","Learn the guest interaction policy and professional boundaries","Understand social media restrictions regarding the ship and guests","Know the whistleblower and reporting policy for misconduct","Understand the ship's environmental compliance rules (MARPOL)","Review the grievance and complaint procedure","Understand rules around fraternisation between crew and guests","Know the designated crew and passenger smoking areas","Confirm understanding of the anti-bribery and gifts policy"] },
+  { id:"ports", emoji:"🗺️", color:"#FF7849", title:"Itinerary & Ports", sub:"Days 5–10", items:["Obtain the current voyage itinerary and port schedule","Learn the local immigration requirements for crew at each port","Understand turnaround day procedures and your role during embarkation","Know the latest gangway departure times before sailing","Confirm which ports require a shore pass or visa for your nationality","Understand procedures when the ship is at anchor vs. docked","Learn the tender boat process if applicable at your ports","Know who to report to if you risk missing the ship ashore","Familiarise yourself with the port agent's contact details","Check whether there are any crew curfews or restricted liberty hours"] },
+  { id:"health", emoji:"💙", color:"#26C6DA", title:"Health & Wellbeing", sub:"Days 7–14", items:["Register with the Ship's Doctor and complete a medical assessment if required","Learn how to access mental health and crew welfare support resources","Understand sick-reporting procedures — who to notify and when","Know the nearest first aid points to your working area","Be aware of the crew chaplain or welfare officer if available","Understand the fatigue and rest hour regulations (MLC 2006)","Learn the process for requesting shore-based medical referral","Know the procedure if you experience harassment or bullying","Connect with a mentor or buddy if the company offers one","Confirm emergency next-of-kin details are registered with HR"] },
+  { id:"community", emoji:"🌍", color:"#F06292", title:"Crew Community", sub:"Days 7–14", items:["Attend a crew social or welcome event if one is organised","Learn a few words in common languages spoken among the crew","Understand the cultural mix onboard and embrace diversity","Know the crew bar rules, operating hours, and tab system","Familiarise yourself with crew notice boards for updates and events","Understand how crew mail and parcels are received and collected","Learn the process for currency exchange if needed onboard","Get familiar with how crew purchase duty-free goods","Introduce yourself to the crew welfare representative","Set personal goals for the contract and discuss with your supervisor"] },
+];
+
+const STORAGE_KEY = 'crewChecklist_v2';
+let appData = { profile: null, checks: {}, completionSent: false };
+try { const s = localStorage.getItem(STORAGE_KEY); if (s) appData = { ...appData, ...JSON.parse(s) }; } catch(e) {}
+
+let activeSection = SECTIONS[0].id;
+let confirmTicked = false;
+let completionModalShown = false;
+
+function save() { try { localStorage.setItem(STORAGE_KEY, JSON.stringify(appData)); } catch(e) {} }
+
+// ── ONBOARDING ──
+function submitOnboarding() {
+  const name   = document.getElementById('ob-name').value.trim();
+  const id     = document.getElementById('ob-id').value.trim();
+  const vessel = document.getElementById('ob-vessel').value.trim();
+  const brand  = document.getElementById('ob-brand').value.trim();
+  const err    = document.getElementById('ob-error');
+  if (!name || !id || !vessel || !brand) { err.classList.add('show'); return; }
+  err.classList.remove('show');
+  appData.profile = { name, id, vessel, brand, joinDate: new Date().toLocaleDateString('en-GB',{day:'numeric',month:'long',year:'numeric'}) };
+  save();
+  document.getElementById('onboarding').classList.add('hidden');
+  launchApp();
+}
+
+// ── APP ──
+function launchApp() {
+  const p = appData.profile;
+  document.getElementById('crew-name-badge').innerHTML = `<strong>${p.name}</strong>${p.vessel}`;
+  buildNav(); buildSections(); updateOverall();
+  const isIOS = /iphone|ipad|ipod/i.test(navigator.userAgent);
+  const isStandalone = window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone;
+  if (isIOS && !isStandalone && !sessionStorage.getItem('shownTip')) {
+    setTimeout(() => { document.getElementById('install-banner').classList.add('show'); sessionStorage.setItem('shownTip','1'); }, 2500);
+  }
+}
+
+function sectionProgress(s) {
+  const done = s.items.filter((_,i) => appData.checks[`${s.id}-${i}`]).length;
+  return { done, total: s.items.length, pct: Math.round(done/s.items.length*100) };
+}
+function totalProgress() {
+  const total = SECTIONS.reduce((a,s)=>a+s.items.length,0);
+  const done = Object.values(appData.checks).filter(Boolean).length;
+  return { done, total, pct: Math.round(done/total*100) };
+}
+function updateOverall() {
+  const {done,total,pct} = totalProgress();
+  document.getElementById('overall-count').textContent = `${done} / ${total} tasks`;
+  document.getElementById('overall-bar-fill').style.width = pct+'%';
+  if (done===total && !completionModalShown && !appData.completionSent) {
+    completionModalShown = true;
+    setTimeout(showCompletionModal, 700);
+  }
+}
+
+function buildNav() {
+  const nav = document.getElementById('section-nav');
+  nav.innerHTML = '';
+  SECTIONS.forEach(s => {
+    const {done,total} = sectionProgress(s);
+    const pill = document.createElement('button');
+    pill.className = 'nav-pill'+(s.id===activeSection?' active':'')+(done===total?' done':'');
+    pill.style.setProperty('--pill-color', s.color);
+    pill.innerHTML = `<span>${s.emoji}</span><span>${s.title.split(' ')[0]}</span><span class="pill-badge">${done}/${total}</span>`;
+    pill.addEventListener('click', ()=>switchSection(s.id));
+    nav.appendChild(pill);
+  });
+  const active = nav.querySelector('.active');
+  if (active) active.scrollIntoView({behavior:'smooth',block:'nearest',inline:'center'});
+}
+
+function buildSections() {
+  const container = document.getElementById('sections-container');
+  container.innerHTML = '';
+  SECTIONS.forEach(s => {
+    const {done,total,pct} = sectionProgress(s);
+    const panel = document.createElement('div');
+    panel.className = 'section-panel'+(s.id===activeSection?' active':'');
+    panel.id = 'panel-'+s.id;
+    panel.style.setProperty('--section-color', s.color);
+    const allDone = done===total;
+    panel.innerHTML = `
+      <div class="section-hero">
+        <div class="hero-icon">${s.emoji}</div>
+        <div class="hero-info"><h2>${s.title}</h2><div class="hero-sub">${s.sub}</div></div>
+        <div class="hero-count" style="color:${allDone?s.color:'#6a7a94'}">${allDone?'✓ Done':done+'/'+total}</div>
+      </div>
+      <div class="section-progress-bar"><div class="section-progress-fill" style="width:${pct}%;background:${s.color};"></div></div>
+      <div class="section-divider" style="background:${s.color};"></div>
+      <div class="checklist">
+        ${s.items.map((item,i)=>{
+          const key=`${s.id}-${i}`;
+          const ck=appData.checks[key]?' checked':'';
+          return `<div class="check-item${ck}" data-key="${key}" onclick="toggleItem('${s.id}',${i})"><div class="check-box">${appData.checks[key]?'✓':''}</div><div class="check-label">${item}</div></div>`;
+        }).join('')}
+        ${allDone?`<div class="section-complete"><div class="complete-icon">🎉</div><p>Section Complete!</p><small style="color:${s.color}">All ${total} tasks done</small></div>`:''}
+      </div>`;
+    container.appendChild(panel);
+  });
+}
+
+function switchSection(id) {
+  activeSection = id;
+  document.querySelectorAll('.section-panel').forEach(p=>p.classList.remove('active'));
+  document.getElementById('panel-'+id).classList.add('active');
+  document.getElementById('content').scrollTop = 0;
+  buildNav();
+}
+
+function toggleItem(sectionId, idx) {
+  const key = `${sectionId}-${idx}`;
+  appData.checks[key] = !appData.checks[key];
+  save();
+  const item = document.querySelector(`[data-key="${key}"]`);
+  if (item) {
+    if (appData.checks[key]) { item.classList.add('checked'); item.querySelector('.check-box').textContent='✓'; }
+    else { item.classList.remove('checked'); item.querySelector('.check-box').textContent=''; }
+  }
+  const s = SECTIONS.find(s=>s.id===sectionId);
+  const {done,total,pct} = sectionProgress(s);
+  const panel = document.getElementById('panel-'+sectionId);
+  const hc = panel.querySelector('.hero-count');
+  const allDone = done===total;
+  hc.textContent = allDone?'✓ Done':`${done}/${total}`;
+  hc.style.color = allDone?s.color:'#6a7a94';
+  panel.querySelector('.section-progress-fill').style.width = pct+'%';
+  const existing = panel.querySelector('.section-complete');
+  if (allDone && !existing) {
+    const el=document.createElement('div'); el.className='section-complete';
+    el.innerHTML=`<div class="complete-icon">🎉</div><p>Section Complete!</p><small style="color:${s.color}">All ${total} tasks done</small>`;
+    panel.querySelector('.checklist').appendChild(el);
+  } else if (!allDone && existing) { existing.remove(); }
+  updateOverall(); buildNav();
+}
+
+// ── COMPLETION MODAL ──
+function showCompletionModal() {
+  const p = appData.profile;
+  const now = new Date().toLocaleDateString('en-GB',{weekday:'long',day:'numeric',month:'long',year:'numeric'});
+  document.getElementById('cm-details-card').innerHTML = `
+    <div class="cm-card-row"><span class="cm-card-label">Name</span><span class="cm-card-value">${p.name}</span></div>
+    <div class="cm-card-row"><span class="cm-card-label">Crew ID</span><span class="cm-card-value">${p.id}</span></div>
+    <div class="cm-card-row"><span class="cm-card-label">Vessel</span><span class="cm-card-value">${p.vessel}</span></div>
+    <div class="cm-card-row"><span class="cm-card-label">Brand</span><span class="cm-card-value">${p.brand}</span></div>
+    <div class="cm-card-row"><span class="cm-card-label">Join Date</span><span class="cm-card-value">${p.joinDate}</span></div>
+    <div class="cm-card-row"><span class="cm-card-label">Completed</span><span class="cm-card-value">${now}</span></div>`;
+  confirmTicked = false;
+  document.getElementById('cm-confirm-row').classList.remove('ticked');
+  document.getElementById('cm-checkbox').textContent = '';
+  document.getElementById('cm-send-btn').classList.remove('ready');
+  document.getElementById('completion-overlay').classList.add('show');
+}
+
+function toggleConfirm() {
+  confirmTicked = !confirmTicked;
+  document.getElementById('cm-confirm-row').classList.toggle('ticked', confirmTicked);
+  document.getElementById('cm-checkbox').textContent = confirmTicked ? '✓' : '';
+  document.getElementById('cm-send-btn').classList.toggle('ready', confirmTicked);
+}
+
+function sendEmail() {
+  if (!confirmTicked) return;
+  const p = appData.profile;
+  const now = new Date().toLocaleDateString('en-GB',{weekday:'long',day:'numeric',month:'long',year:'numeric'});
+  const time = new Date().toLocaleTimeString('en-GB',{hour:'2-digit',minute:'2-digit'});
+
+  const subject = encodeURIComponent(`Crew Onboarding Completion — ${p.name} — ${p.vessel}`);
+  const body = encodeURIComponent(
+`CREW ONBOARDING COMPLETION RECORD
+====================================
+
+Name:       ${p.name}
+Crew ID:    ${p.id}
+Vessel:     ${p.vessel}
+Brand:      ${p.brand}
+Join Date:  ${p.joinDate}
+Completed:  ${now} at ${time}
+
+====================================
+TASKS COMPLETED: 80 / 80 (100%)
+====================================
+
+SECTIONS:
+
+  [✓] Safety & Emergency Procedures    10/10
+  [✓] Administration & Documents       10/10
+  [✓] Ship Familiarisation             10/10
+  [✓] Department & Role Orientation    10/10
+  [✓] Rules & Policies                 10/10
+  [✓] Itinerary & Port Knowledge       10/10
+  [✓] Health & Wellbeing               10/10
+  [✓] Crew Community & Culture         10/10
+
+====================================
+DECLARATION
+
+${p.name} has confirmed that all 80 first-14-day
+onboarding tasks have been genuinely completed
+aboard ${p.vessel} (${p.brand}).
+
+This record was submitted via the Crew Onboarding
+App on ${now} at ${time}.
+====================================`);
+
+  window.location.href = `mailto:mathewwells@hotmail.co.uk?subject=${subject}&body=${body}`;
+  appData.completionSent = true;
+  save();
+  setTimeout(() => document.getElementById('completion-overlay').classList.remove('show'), 800);
+}
+
+// ── BOOT ──
+if (appData.profile) {
+  document.getElementById('onboarding').classList.add('hidden');
+  launchApp();
+}
+</script>
+</body>
+</html>
